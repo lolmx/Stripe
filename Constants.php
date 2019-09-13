@@ -12,8 +12,6 @@ class Constants
 
     const STATUS_PAID = 'paid';
     const STATUS_FAILED = 'failed';
-    const STATUS_AUTHENTICATION_REQUIRED = 'authentication_required';
-    const NEXT_ACTION_TYPE = 'use_stripe_sdk';
 
     private function __construct()
     {
