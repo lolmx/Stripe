@@ -11,6 +11,7 @@ use Payum\Stripe\Action\CheckoutServer\StatusAction;
 use Payum\Stripe\Action\CheckoutServer\SyncAction;
 use Payum\Stripe\Action\Api\CreateSessionAction;
 use Payum\Stripe\Action\Api\RetrievePaymentIntentAction;
+use Payum\Stripe\Action\Api\RedirectToCheckoutServerAction;
 use Stripe\Stripe;
 
 class StripeCheckoutServerGatewayFactory extends GatewayFactory
@@ -38,8 +39,9 @@ class StripeCheckoutServerGatewayFactory extends GatewayFactory
             'payum.action.status' => new StatusAction(),
             'payum.action.sync' => new SyncAction(),
             'payum.action.convert_payment' => new ConvertPaymentAction(),
-            'payum.action.create_session' => function (ArrayObject $config) {
-                return new CreateSessionAction($config['payum.template.redirect_session_to_checkout']);
+            'payum.action.create_session' => new CreateSessionAction(),
+            'payum.action.redirect_to_checkout_server' => function (ArrayObject $config) {
+                return new RedirectToCheckoutServerAction($config['payum.template.redirect_session_to_checkout']);
             },
             'payum.action.retrieve_payment_intent' => new RetrievePaymentIntentAction(),
         ]);

@@ -10,6 +10,8 @@ use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\Capture;
 use Payum\Core\Request\Sync;
 use Payum\Stripe\Request\Api\CreateSession;
+use Payum\Stripe\Request\Api\RedirectToCheckoutServer;
+use Stripe\Checkout\Session;
 
 class CaptureAction implements ActionInterface, GatewayAwareInterface
 {
@@ -27,11 +29,14 @@ class CaptureAction implements ActionInterface, GatewayAwareInterface
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        if (false == $model['id']) {
+        if (empty($model['id']) && empty($model['object'])) {
             $model['success_url'] = $request->getToken()->getTargetUrl();
             $model['cancel_url'] = $request->getToken()->getTargetUrl();
 
             $this->gateway->execute(new CreateSession($model));
+            $this->gateway->execute(new RedirectToCheckoutServer($model));
+        } elseif ($model->offsetExists('object') && $model['object'] === Session::OBJECT_NAME && !empty($model['id'])) {
+            $this->gateway->execute(new RedirectToCheckoutServer($model));
         }
 
         $this->gateway->execute(new Sync($model));
