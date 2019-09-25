@@ -20,8 +20,12 @@ class StripeCheckoutServerGatewayFactory extends GatewayFactory
      */
     protected function populateConfig(ArrayObject $config)
     {
-        if (false === class_exists(Stripe::class)) {
-            throw new LogicException('You must install "stripe/stripe-php:^6|^7" library.');
+        if (
+            false === class_exists(Stripe::class) ||
+            $this->parseStripeVersion(Stripe::VERSION)['major'] !== 6 ||
+            $this->parseStripeVersion(Stripe::VERSION)['minor'] < 9
+        ) {
+            throw new LogicException('You must install "stripe/stripe-php:^6.9" library.');
         }
 
         $config->defaults([
@@ -58,5 +62,17 @@ class StripeCheckoutServerGatewayFactory extends GatewayFactory
         $config['payum.paths'] = array_replace([
             'PayumStripe' => __DIR__.'/Resources/views',
         ], $config['payum.paths'] ?: []);
+    }
+
+    protected function parseStripeVersion(string $version): array
+    {
+        $parsed = explode('.', $version);
+
+        $parsedVersion = [];
+        $parsedVersion['major'] = (int)$parsed[0];
+        $parsedVersion['minor'] = $parsed[1] ? (int)$parsed[1] : null;
+        $parsedVersion['patch'] = $parsed[2] ? (int)$parsed[2] : null;
+
+        return $parsedVersion;
     }
 }
