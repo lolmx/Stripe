@@ -6,7 +6,6 @@ use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\GetStatusInterface;
-use Payum\Stripe\Constants;
 use Stripe\PaymentIntent;
 use Stripe\Refund;
 
@@ -35,31 +34,31 @@ class StatusAction implements ActionInterface
             return;
         }
 
-        if ($model['object'] === PaymentIntent::OBJECT_NAME && Constants::STATUS_PROCESSING === $model['status']) {
+        if ($model['object'] === PaymentIntent::OBJECT_NAME && PaymentIntent::STATUS_PROCESSING === $model['status']) {
             $request->markPending();
 
             return;
         }
 
-        if ($model['object'] === Refund::OBJECT_NAME && Constants::STATUS_SUCCEEDED === $model['status']) {
+        if ($model['object'] === Refund::OBJECT_NAME && Refund::STATUS_SUCCEEDED === $model['status']) {
             $request->markRefunded();
 
             return;
         }
 
-        if ($model['object'] === PaymentIntent::OBJECT_NAME && Constants::STATUS_CANCELED == $model['status']) {
+        if ($model['object'] === PaymentIntent::OBJECT_NAME && PaymentIntent::STATUS_CANCELED == $model['status']) {
             $request->markCanceled();
 
             return;
         }
 
-        if ($model['object'] === PaymentIntent::OBJECT_NAME && Constants::STATUS_SUCCEEDED === $model['status']) {
+        if ($model['object'] === PaymentIntent::OBJECT_NAME && PaymentIntent::STATUS_SUCCEEDED === $model['status']) {
             $request->markCaptured();
 
             return;
         }
 
-        if ($model['object'] === PaymentIntent::OBJECT_NAME && Constants::STATUS_REQUIRES_PAYMENT_METHOD == $model['status']) {
+        if ($model['object'] === PaymentIntent::OBJECT_NAME && PaymentIntent::STATUS_REQUIRES_CAPTURE == $model['status']) {
             $request->markAuthorized();
 
             return;
