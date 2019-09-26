@@ -63,11 +63,20 @@ class RetrievePaymentIntentAction implements ActionInterface, ApiAwareInterface,
             throw new LogicException('PaymentIntent ID has to be provided.');
         }
 
+        $cancelled = false;
+        if ($model->offsetExists('CANCELLED') && true === $model['CANCELLED']) {
+            $cancelled = true;
+        }
+
         try {
             Stripe::setApiKey($this->keys->getSecretKey());
 
             $paymentIntent = PaymentIntent::retrieve($model['payment_intent']);
             $model->replace($paymentIntent->__toArray(true));
+
+            if ($cancelled) {
+                $model['CANCELLED'] = true;
+            }
         } catch (Error\Base $e) {
             $model->replace($e->getJsonBody());
         }

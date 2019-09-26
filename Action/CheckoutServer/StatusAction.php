@@ -34,7 +34,19 @@ class StatusAction implements ActionInterface
             return;
         }
 
+        if ($model->offsetExists('CANCELLED') && true === $model['CANCELLED']) {
+            $request->markCanceled();
+
+            return;
+        }
+
         if ($model['object'] === PaymentIntent::OBJECT_NAME && PaymentIntent::STATUS_PROCESSING === $model['status']) {
+            $request->markPending();
+
+            return;
+        }
+
+        if ($model['object'] === PaymentIntent::OBJECT_NAME && PaymentIntent::STATUS_REQUIRES_PAYMENT_METHOD === $model['status']) {
             $request->markPending();
 
             return;

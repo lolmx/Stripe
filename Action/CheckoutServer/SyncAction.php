@@ -27,8 +27,8 @@ class SyncAction implements ActionInterface, GatewayAwareInterface
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
         if (
-            !empty($model['id']) && !empty($model['payment_intent']) &&
-            !empty($model['object']) && Session::OBJECT_NAME === $model['object']
+            $model->offsetExists('object') && Session::OBJECT_NAME === $model['object'] &&
+            !empty($model['id']) && !empty($model['payment_intent'])
         ) {
             $this->gateway->execute(new RetrievePaymentIntent($model));
         }
